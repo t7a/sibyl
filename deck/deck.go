@@ -1,7 +1,11 @@
 // Package deck provides various deck capabilities
 package deck
 
-import "errors"
+import (
+	"encoding/json"
+	"errors"
+	"io/ioutil"
+)
 
 // Deck represents an individual deck of cards
 type Deck struct {
@@ -24,6 +28,8 @@ var TShirtSizes = &Deck{"T-Shirt Sizes", []string{"XS", "S", "M", "L", "XL", "XX
 var Hours = &Deck{"Hours", []string{"0", ".5", "1", "2", "4", "8", "12", "16", "20", "24", "?", "☕"}}
 
 // AllDecks contains a mapping of deck names to decks
+// type Decks map[string]*Deck
+
 var AllDecks = map[string]*Deck{
 	ModifiedFibonacci.Name: ModifiedFibonacci,
 	Fibonacci.Name:         Fibonacci,
@@ -38,4 +44,21 @@ func (d *Deck) GetCard(i int) (string, error) {
 	}
 
 	return d.Cards[i], nil
+}
+
+func AppendFromJSON(filename string) (err error) {
+	newDecks := make(map[string]*Deck)
+	buf, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(buf, &newDecks)
+	if err != nil {
+		return
+	}
+	for name, deck := range AllDecks {
+		newDecks[name] = deck
+	}
+	AllDecks = newDecks
+	return
 }

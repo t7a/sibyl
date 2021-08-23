@@ -237,6 +237,12 @@ func (s *Server) roomHandler(w http.ResponseWriter, r *http.Request) {
 
 	token = g.Token
 
+	decktest, _ := json.Marshal(deck.AllDecks)
+	fmt.Println(string(decktest))
+	err := deck.AppendFromJSON("decks.json")
+	if err != nil {
+		log.Errorf("could not unmarshal JSON: %v", err)
+	}
 	deckJSON, _ := json.Marshal(deck.AllDecks)
 
 	decks := make([]string, 0, len(deck.AllDecks))
